@@ -18,7 +18,10 @@
     <h2>All Expenses</h2>
     <ul>
       {% for expense in expenses %}
-        <li>{{ expense.description }} - ${{ expense.amount }}</li>
+        <li>{{ expense.description }} - ${{ expense.amount }}
+            <a href="{{ url_for('main.edit_expense', expense_id=expense.id) }}">Edit</a>
+            <a href="{{ url_for('main.delete_expense', expense_id=expense.id) }}">Delete</a>
+        </li>
       {% else %}
         <li>No expenses yet.</li>
       {% endfor %}

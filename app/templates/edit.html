@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Edit Expense</title>
+    </head>
+    <body>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.description.label }} {{ form.description() }}<br>
+            {{ form.amount.label }} {{ form.amount() }}<br>
+            {{ form.submit(value="Update Expense") }}
+        </form>
+        <a href="/">Back</a>
+    </body>
+</html>
