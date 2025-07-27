@@ -15,6 +15,13 @@
 
     <hr>
 
+    <form method="GET" action="/">
+      <input type="text" name="q" placeholder="Search description...">
+      <button type="submit">Search</button>
+    </form>
+
+    <h3>Total: ${{ total }}</h3>
+
     <h2>All Expenses</h2>
     <ul>
       {% for expense in expenses %}

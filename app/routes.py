@@ -8,6 +8,7 @@ main = Blueprint('main', __name__)
 @main.route('/', methods=['GET', 'POST'])
 def index():
     form = ExpenseForm()
+    query = request.args.get('q', '')
 
     if form.validate_on_submit():
         new_expense = Expense(
@@ -18,8 +19,14 @@ def index():
         db.session.commit()
         return redirect('/')
     
-    expenses = Expense.query.all()
-    return render_template('index.html', form=form, expenses=expenses)
+    if query:
+        expenses = Expense.query.filter(Expense.description.ilike(f"%{query}%")).all()
+    else:
+        expenses = Expense.query.all()
+    
+    total = sum(exp.amount for exp in expenses)
+
+    return render_template('index.html', form=form, expenses=expenses, total=total, query=query)
 
 @main.route('/edit/<int:expense_id>', methods=['GET', 'POST'])
 def edit_expense(expense_id):
@@ -40,3 +47,4 @@ def delete_expense(expense_id):
     db.session.delete(expense)
     db.session.commit()
     return redirect('/')
+
