@@ -10,15 +10,36 @@
       {{ form.hidden_tag() }}
       {{ form.description.label }} {{ form.description() }}<br>
       {{ form.amount.label }} {{ form.amount() }}<br>
+
+      <!-- Category dropdown -->
+      <label for="category">Category</label>
+      <select name="category_id">
+        <option value="">-- Select Category --</option>
+        {% for cat in categories %}
+          <option value="{{ cat.id }}">{{ cat.name }}</option>
+        {% endfor %}
+      </select><br><br>
+
       {{ form.submit() }}
     </form>
 
     <hr>
 
+    <!-- Combined Search + Filter Form -->
     <form method="GET" action="/">
-      <input type="text" name="q" placeholder="Search description...">
-      <button type="submit">Search</button>
+      <input type="text" name="q" value="{{ query }}" placeholder="Search description...">
+
+      <label for="cat_id">Filter by Category:</label>
+      <select name="cat_id">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if cat.id == selected_cat_id %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit">Apply</button>
     </form>
+
 
     <h3>Total: ${{ total }}</h3>
 
@@ -26,6 +47,9 @@
     <ul>
       {% for expense in expenses %}
         <li>{{ expense.description }} - ${{ expense.amount }}
+            {% if expense.category %}
+              <small>Category: {{ expense.category.name }}</small><br>
+            {% endif %}
             <a href="{{ url_for('main.edit_expense', expense_id=expense.id) }}">Edit</a>
             <a href="{{ url_for('main.delete_expense', expense_id=expense.id) }}">Delete</a>
         </li>
