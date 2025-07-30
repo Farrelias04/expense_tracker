@@ -35,13 +35,23 @@ def index():
     expenses = expenses_query.all()
     total = sum(exp.amount for exp in expenses)
 
+    # Totals per category
+
+    from collections import defaultdict
+
+    category_totals = defaultdict(float)
+    for expense in Expense.query.all():
+        if expense.category:
+            category_totals[expense.category.name] += expense.amount
+
     return render_template(
         'index.html',
         form=form,
         expenses=expenses,
         total=total, query=query,
         categories=categories,
-        selected_cat_id=cat_id
+        selected_cat_id=cat_id,
+        category_totals=category_totals
     )
 
 @main.route('/edit/<int:expense_id>', methods=['GET', 'POST'])
