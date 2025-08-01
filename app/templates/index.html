@@ -24,14 +24,14 @@
       {{ form.submit() }}
     </form>
 
-    <!-- Combined Search + Filter Form -->
-
     <hr>
     <h2 class="mt-4">Filter Your Expenses</h2>
 
+    <!-- Search by Description -->
     <form method="GET" action="/">
       <input type="text" name="q" value="{{ query }}" placeholder="Search description...">
 
+      <!-- Filter by Category -->
       <label for="cat_id">Filter by Category:</label>
       <select name="cat_id">
         <option value="">All Categories</option>
@@ -40,12 +40,25 @@
         {% endfor %}
       </select>
 
+      <!-- Filter by Date -->
+      <label for="start_date">From:</label> 
+      <input type="date" name="start_date" value="{{ start_date }}">
+
+      <label for="end_date">To:</label>
+      <input type="date" name="end_date" value="{{ end_date }}">
+
       <button type="submit">Apply</button>
     </form>
 
     <!-- Summary Table -->
 
     <hr>
+    {% if start_date or end_date %}
+      <p><strong>Showing expenses</strong>
+        {% if start_date %} from <em>{{ start_date }}</em>{% endif %}
+        {% if end_date %} to <em>{{ end_date }}</em>{% endif %}
+      </p>
+    {% endif %}
     <h2 class="mt-4">Spending Summary</h2>
 
     <table class="table table-sm table-striped table-bordered w-50 mx-auto mt-4">
@@ -89,6 +102,7 @@
 
     <hr>
     <h2>All Expenses</h2>
+
     <ul>
       {% for expense in expenses %}
         <li>{{ expense.description }} - ${{ expense.amount }}

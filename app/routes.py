@@ -11,6 +11,9 @@ def index():
     form = ExpenseForm()
     query = request.args.get('q', '')
     cat_id = request.args.get('cat_id', type=int)
+    start_date_str = request.args.get('start_date')
+    end_date_str = request.args.get('end_date')
+    
     categories = Category.query.all()
 
     if form.validate_on_submit():
@@ -32,17 +35,28 @@ def index():
     if cat_id:
         expenses_query = expenses_query.filter_by(category_id=cat_id)
 
+    if start_date_str:
+        start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        expenses_query = expenses_query.filter(Expense.date >= start_date)
+    else:
+        start_date = None
+    
+    if end_date_str:
+        end_date = datetime.datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        expenses_query = expenses_query.filter(Expense.date <= end_date)
+    else:
+        end_date = None
+
     expenses = expenses_query.all()
     total = sum(exp.amount for exp in expenses)
 
     # Totals per category
 
     from collections import defaultdict
-
     category_totals = defaultdict(float)
-    for expense in Expense.query.all():
-        if expense.category:
-            category_totals[expense.category.name] += expense.amount
+    for exp in expenses:
+        if exp.category:
+            category_totals[exp.category.name] += exp.amount
 
     return render_template(
         'index.html',
@@ -51,7 +65,9 @@ def index():
         total=total, query=query,
         categories=categories,
         selected_cat_id=cat_id,
-        category_totals=category_totals
+        category_totals=category_totals,
+        start_date=start_date_str,
+        end_date=end_date_str
     )
 
 @main.route('/edit/<int:expense_id>', methods=['GET', 'POST'])
